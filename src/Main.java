@@ -60,7 +60,7 @@ public class Main {
 
         boolean turnoJugador = true;
 
-        // Bucle principal de batalla
+
         while (jugador.vida > 0 && rival.vida > 0) {
             System.out.println("-------------------------------------");
             imprimirEstado(jugador);
@@ -68,16 +68,13 @@ public class Main {
             System.out.println("-------------------------------------");
 
             if (turnoJugador) {
-                // Turno del jugador
                 System.out.println("\nTu turno (" + jugador.nombre + ")");
                 int opcion = elegirAtaque(sc);
 
                 if (opcion == 1) {
-                    // Ataque normal
                     rival.vida = realizarAtaque(jugador.danhoGolpe, rival.vida, rival.defensa);
                     System.out.println(jugador.nombre + " le hace " + (jugador.danhoGolpe - rival.defensa) + " puntos de daño a " + rival.nombre + ".");
                 } else {
-                    // Ataque especial
                     if (jugador.mp >= jugador.mpGolpeEspecial) {
                         jugador.mp -= jugador.mpGolpeEspecial;
                         rival.vida = realizarAtaque(jugador.danhoEspecial, rival.vida, rival.defensa);
@@ -88,7 +85,6 @@ public class Main {
                 }
 
             } else {
-                // Turno del rival (automático)
                 System.out.println("\nTurno del rival (" + rival.nombre + ")");
                 int opcionRival = random.nextInt(2) + 1; // 1 o 2
 
@@ -106,7 +102,6 @@ public class Main {
                 }
             }
 
-            // Verificar si alguien perdió
             if (jugador.vida <= 0) {
                 System.out.println("\n💀 " + jugador.nombre + " se ha debilitado.");
                 System.out.println("🏆 " + rival.nombre + " gana la batalla!");
@@ -117,13 +112,11 @@ public class Main {
                 break;
             }
 
-            turnoJugador = !turnoJugador; // cambiar turno
+            turnoJugador = !turnoJugador;
         }
 
         sc.close();
     }
-
-    // ------------------ FUNCIONES NUEVAS ------------------
 
     public static void imprimirEstado(Pokemon p) {
         System.out.println(p.nombre + " ➜ Vida: " + p.vida + " | MP: " + p.mp);

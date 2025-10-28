@@ -8,7 +8,6 @@ public class Pokemon {
     int danhoEspecial;
     int mpGolpeEspecial;
 
-    // Constructor
     public Pokemon(String nombre, int vida, int mp, int danhoGolpe, int defensa, String golpeEspecial, int danhoEspecial, int mpGolpeEspecial) {
         this.nombre = nombre;
         this.vida = vida;
@@ -20,7 +19,6 @@ public class Pokemon {
         this.mpGolpeEspecial = mpGolpeEspecial;
     }
 
-    // Metodo para mostrar información
     public void mostrarInfo() {
         System.out.println("Nombre: " + nombre);
         System.out.println("Vida: " + vida);
