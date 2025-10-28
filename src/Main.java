@@ -18,12 +18,35 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         Random random = new Random();
 
+        String username;
+
+        System.out.print("Bienvenido al mundo pokemon! Escribe tu nombre de usuario: ");
+        username = sc.nextLine();
+        System.out.println("Genial " + username + ". Pues comencemos!");
+        System.out.println("");
+
+        int opcionMenu = 0;
+
+        System.out.println("========MENU DE OPCIONES========");
+        System.out.println("1. Jugar batalla");
+        System.out.println("2. Salir");
+        System.out.println("================================");
+        System.out.print("Escoja una opcion: ");
+        opcionMenu = sc.nextInt();
+
+        do {
+            if (opcionMenu != 1 && opcionMenu != 2) {
+                System.out.print("Opcion incorrecta. Introduzca una opcion valida:");
+                opcionMenu = sc.nextInt();
+            }
+        } while (opcionMenu != 1 && opcionMenu != 2);
+
         System.out.println("=== LISTA DE POKÉMON DISPONIBLES ===");
         for (int i = 0; i < pokemons.size(); i++) {
             System.out.println((i + 1) + ". " + pokemons.get(i).nombre);
         }
 
-        System.out.print("\nElige el número de tu Pokémon: ");
+        System.out.print("\nElige el número de tu Pokémon (1, 2, 3...): ");
         Pokemon jugador = pokemons.get(sc.nextInt() - 1);
 
         Pokemon rival;
@@ -35,56 +58,46 @@ public class Main {
 
         boolean turnoJugador = true;
 
+        // Bucle principal de batalla
         while (jugador.vida > 0 && rival.vida > 0) {
             System.out.println("-------------------------------------");
-            System.out.println(jugador.nombre + " ➜ Vida: " + jugador.vida + " | MP: " + jugador.mp);
-            System.out.println(rival.nombre + " ➜ Vida: " + rival.vida + " | MP: " + rival.mp);
+            imprimirEstado(jugador);
+            imprimirEstado(rival);
             System.out.println("-------------------------------------");
 
             if (turnoJugador) {
                 // Turno del jugador
                 System.out.println("\nTu turno (" + jugador.nombre + ")");
-                System.out.print("¿Qué ataque quieres usar? (1 = Normal, 2 = Especial): ");
-                int opcion = sc.nextInt();
-
-                int danho = 0;
+                int opcion = elegirAtaque(sc);
 
                 if (opcion == 1) {
-                    danho = jugador.danhoGolpe - rival.defensa;
-                    if (danho < 0) danho = 0;
-                    rival.vida -= danho;
-                    System.out.println(jugador.nombre + " le hace " + danho + " puntos de daño a " + rival.nombre + ".");
-                } else if (opcion == 2) {
+                    // Ataque normal
+                    rival.vida = realizarAtaque(jugador.danhoGolpe, rival.vida, rival.defensa);
+                    System.out.println(jugador.nombre + " le hace " + (jugador.danhoGolpe - rival.defensa) + " puntos de daño a " + rival.nombre + ".");
+                } else {
+                    // Ataque especial
                     if (jugador.mp >= jugador.mpGolpeEspecial) {
                         jugador.mp -= jugador.mpGolpeEspecial;
-                        danho = jugador.danhoEspecial - rival.defensa;
-                        if (danho < 0) danho = 0;
-                        rival.vida -= danho;
-                        System.out.println(jugador.nombre + " usa " + jugador.golpeEspecial + " y le hace " + danho + " puntos de daño a " + rival.nombre + "!");
+                        rival.vida = realizarAtaque(jugador.danhoEspecial, rival.vida, rival.defensa);
+                        System.out.println(jugador.nombre + " usa " + jugador.golpeEspecial + " y le hace " + (jugador.danhoEspecial - rival.defensa) + " puntos de daño a " + rival.nombre + "!");
                     } else {
                         System.out.println(jugador.nombre + " no tiene suficientes MP y pierde el turno.");
                     }
-                } else {
-                    System.out.println("Opción no válida. Pierdes el turno.");
                 }
+
             } else {
                 // Turno del rival (automático)
                 System.out.println("\nTurno del rival (" + rival.nombre + ")");
                 int opcionRival = random.nextInt(2) + 1; // 1 o 2
 
-                int danho = 0;
                 if (opcionRival == 1) {
-                    danho = rival.danhoGolpe - jugador.defensa;
-                    if (danho < 0) danho = 0;
-                    jugador.vida -= danho;
-                    System.out.println(rival.nombre + " usa ataque normal y le hace " + danho + " puntos de daño a " + jugador.nombre + ".");
+                    jugador.vida = realizarAtaque(rival.danhoGolpe, jugador.vida, jugador.defensa);
+                    System.out.println(rival.nombre + " usa ataque normal y le hace " + (rival.danhoGolpe - jugador.defensa) + " puntos de daño a " + jugador.nombre + ".");
                 } else {
                     if (rival.mp >= rival.mpGolpeEspecial) {
                         rival.mp -= rival.mpGolpeEspecial;
-                        danho = rival.danhoEspecial - jugador.defensa;
-                        if (danho < 0) danho = 0;
-                        jugador.vida -= danho;
-                        System.out.println(rival.nombre + " usa " + rival.golpeEspecial + " y le hace " + danho + " puntos de daño a " + jugador.nombre + "!");
+                        jugador.vida = realizarAtaque(rival.danhoEspecial, jugador.vida, jugador.defensa);
+                        System.out.println(rival.nombre + " usa " + rival.golpeEspecial + " y le hace " + (rival.danhoEspecial - jugador.defensa) + " puntos de daño a " + jugador.nombre + "!");
                     } else {
                         System.out.println(rival.nombre + " intenta usar " + rival.golpeEspecial + " pero no tiene suficientes MP. Pierde el turno.");
                     }
@@ -108,7 +121,37 @@ public class Main {
         sc.close();
     }
 
-    // Leer Pokémon desde CSV
+    // ------------------ FUNCIONES NUEVAS ------------------
+
+    public static void imprimirEstado(Pokemon p) {
+        System.out.println(p.nombre + " ➜ Vida: " + p.vida + " | MP: " + p.mp);
+    }
+
+    public static int elegirAtaque(Scanner sc) {
+        int opcion;
+        do {
+            System.out.println("\nElige tu ataque:");
+            System.out.println("1. Ataque normal");
+            System.out.println("2. Ataque especial");
+            System.out.print("Opción: ");
+            opcion = sc.nextInt();
+
+            if (opcion != 1 && opcion != 2) {
+                System.out.println("❌ Opción no válida, intenta de nuevo.");
+            }
+        } while (opcion != 1 && opcion != 2);
+
+        return opcion;
+    }
+
+    public static int realizarAtaque(int danho, int vidaEnemigo, int defensaEnemigo) {
+        int danhoReal = danho - defensaEnemigo;
+        if (danhoReal < 0) danhoReal = 0;
+        int nuevaVida = vidaEnemigo - danhoReal;
+        if (nuevaVida < 0) nuevaVida = 0;
+        return nuevaVida;
+    }
+
     public static ArrayList<Pokemon> leerPokemonsDesdeCSV(String archivoCSV) {
         ArrayList<Pokemon> pokemons = new ArrayList<>();
 

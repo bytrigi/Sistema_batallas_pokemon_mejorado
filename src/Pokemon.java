@@ -9,8 +9,7 @@ public class Pokemon {
     int mpGolpeEspecial;
 
     // Constructor
-    public Pokemon(String nombre, int vida, int mp, int danhoGolpe, int defensa,
-                   String golpeEspecial, int danhoEspecial, int mpGolpeEspecial) {
+    public Pokemon(String nombre, int vida, int mp, int danhoGolpe, int defensa, String golpeEspecial, int danhoEspecial, int mpGolpeEspecial) {
         this.nombre = nombre;
         this.vida = vida;
         this.mp = mp;
